@@ -19,7 +19,13 @@ or absolute path:
     
     python duplicates.py /Users/user/aa/Downloads/
     
+After running the script you will get groups of duplicating files separated by
+empty lines.
 
+## Warning
+
+Script may skip files which otherwise generate OS error, for example files
+ with too long file path.
 
 ## Support
 
