@@ -7,7 +7,7 @@ def calculate_file_hash(file_path):
     hasher = hashlib.md5()
     try:
         with open(file_path, 'rb') as file_handler:
-            hasher.update(file_handler.read())
+            hasher.update(file_handler.read(1000000))
             return hasher.hexdigest()
     except OSError:
         pass
@@ -15,18 +15,14 @@ def calculate_file_hash(file_path):
 
 def find_duplicates(folder_path):
     hashes_dict = {}
-    duplicates_dict = {}
     for directory, subdirectories, file_list in os.walk(folder_path):
         for file_name in file_list:
             full_file_path = os.path.join(directory, file_name)
             file_hash = calculate_file_hash(full_file_path)
-            if file_hash in hashes_dict:
-                if file_hash not in duplicates_dict:
-                    duplicates_dict[file_hash] = [full_file_path]
-                duplicates_dict[file_hash].append(full_file_path)
-            else:
-                hashes_dict[file_hash] = [full_file_path]
-    return duplicates_dict
+            hashes_dict.setdefault(file_hash, []).append(full_file_path)
+    duplicates_list = [paths for paths in hashes_dict.values()
+                       if len(paths) > 1]
+    return duplicates_list
 
 
 def parse_arguments():
@@ -37,10 +33,10 @@ def parse_arguments():
     return arguments.path
 
 
-def print_duplicates(duplicates_dictionary):
-    for _, duplicates_list in duplicates_dictionary.items():
+def print_duplicates(duplicates_list):
+    for file_paths in duplicates_list:
         print('Group of duplicates:', end='\n\n')
-        print('\n'.join(duplicates_list))
+        print('\n'.join(file_paths))
         print('_________________________', end='\n\n')
 
 if __name__ == '__main__':
