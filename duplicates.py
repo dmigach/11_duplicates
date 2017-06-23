@@ -4,10 +4,11 @@ import os
 
 
 def calculate_file_hash(file_path):
+    bytes_to_read = 1000000
     hasher = hashlib.md5()
     try:
         with open(file_path, 'rb') as file_handler:
-            hasher.update(file_handler.read(1000000))
+            hasher.update(file_handler.read(bytes_to_read))
             return hasher.hexdigest()
     except OSError:
         pass
